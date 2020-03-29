@@ -17,6 +17,8 @@ jobs:
 
       - name: Push
         run: |
+          git config user.email "lockdown-bot@non-existing.com"
+          git config user.name "lockdown-bot"
           git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
           git pull github ${GITHUB_REF} --ff-only
 
