@@ -24,12 +24,12 @@ async function execCommand(command) {
 (async () => {
   try {
     const branchName = `test-git-${now}`;
-    await execCommand('git checkout origin/master');
-    await execCommand(`git checkout -b ${branchName}`);
+    // await execCommand('git checkout origin/master');
+    // await execCommand(`git checkout -b ${branchName}`);
     await fs.writeFile('foo.txt', `hello ${now}`, 'utf-8');
-    await execCommand(`git add foo.txt`);
-    await execCommand(`git commit -a -m "Add ${now}"`);
-    await execCommand(`git push -u origin ${branchName}`);
+    // await execCommand(`git add foo.txt`);
+    // await execCommand(`git commit -a -m "Add ${now}"`);
+    // await execCommand(`git push -u origin ${branchName}`);
   } catch (error) {
     console.error(error);
   }

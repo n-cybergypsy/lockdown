@@ -1,9 +1,6 @@
 name: Deploy
 
-on:
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron: '*/1 * * * *'
+on: [push]
 
 jobs:
   generate-data:
@@ -17,3 +14,13 @@ jobs:
       - name: Generate
         run: |
           node script/test.js
+
+      - name: Push
+        run: |
+          git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git pull github ${GITHUB_REF} --ff-only
+
+          git add foo.txt
+
+          git commit -m "Update"
+          git push github HEAD:${GITHUB_REF}
