@@ -11,17 +11,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Generate
+      - name: Update data
         run: |
           node script/test.js
 
-      - name: Commit
+      - name: Commit changes
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}"
           git config user.email "lockdown-bot@non-existing.com"
           git config user.name "lockdown-bot"
-          git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
-          git pull github ${GITHUB_REF} --ff-only
 
           git add foo.txt
 
