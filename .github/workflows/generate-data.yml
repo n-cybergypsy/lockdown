@@ -15,8 +15,9 @@ jobs:
         run: |
           node script/test.js
 
-      - name: Push
+      - name: Commit
         run: |
+          echo "${{ secrets.GITHUB_TOKEN }}"
           git config user.email "lockdown-bot@non-existing.com"
           git config user.name "lockdown-bot"
           git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
@@ -25,4 +26,8 @@ jobs:
           git add foo.txt
 
           git commit -m "Update"
-          git push github HEAD:${GITHUB_REF}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: test-cron-job-data
+          github_token: ${{ secrets.GITHUB_TOKEN }}
