@@ -8,7 +8,7 @@ export function Expandable(props) {
 
   useEffect(() => {
     if (expanded) {
-      detail.current.focus();
+      detail.current.focus({ preventScroll: true });
     }
   }, [expanded]);
 
@@ -54,7 +54,7 @@ const styles = css`
   }
 
   .ld-expandable--icon {
-    height: 100%;
+    height: 60px;
     display: flex;
     align-items: center;
   }
@@ -64,6 +64,7 @@ const styles = css`
     font-family: 'Montserrat', sans-serif;
     display: flex;
     align-items: center;
+    height: 60px;
   }
 
   .ld-expandable button {
@@ -80,6 +81,10 @@ const styles = css`
 
   .ld-expandable--toggle {
     height: 60px;
+  }
+
+  .ld-expandable--toggle:hover {
+    background-color: rgb(247, 247, 247);
   }
 
   .ld-expandable--detail {

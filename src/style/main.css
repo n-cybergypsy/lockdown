@@ -4,6 +4,13 @@
   --ld-light-blue: #add8e6;
 }
 
+html {
+  /* 1/2 prevent bouncy scroll on iOS */
+  position: fixed;
+  height: 100%;
+  overflow: hidden;
+}
+
 html,
 body {
   height: 100%;
@@ -12,6 +19,10 @@ body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
   color: var(--ld-dark-gray);
+  /* 2/2 prevent bouncy scroll on iOS */
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 *,
@@ -27,10 +38,12 @@ body {
 }
 
 .ld-menu {
+  z-index: 1100;
   flex-shrink: 0;
   width: 400px;
   margin-top: 76px;
   padding: 10px;
+  touch-action: manipulation;
 }
 
 .ld-menu-nav ul {
@@ -47,6 +60,7 @@ body {
 }
 
 .ld-menu-nav button {
+  font-family: 'Montserrat', sans-serif;
   border: none;
   margin: 0;
   padding: 0;
@@ -56,7 +70,7 @@ body {
   font-weight: 700;
 }
 
-.ld-menu-nav img {
+.ld-menu-nav svg {
   display: none;
 }
 
@@ -64,6 +78,11 @@ body {
   overflow: auto;
   height: calc(100% - 44px);
   padding: 0px 20px 0px 20px;
+}
+
+.ld-menu--active {
+  color: blue;
+  text-decoration: underline;
 }
 
 .ld-menu--content-x {
@@ -148,7 +167,7 @@ body {
     position: relative;
   }
 
-  .ld-menu-nav img {
+  .ld-menu-nav svg {
     display: block;
     flex: 1;
     height: 40px;

@@ -2,11 +2,8 @@ import { html } from 'htm/preact';
 import { Component } from 'preact';
 import { Expandable } from './Expandable.js';
 import { Ticker } from './Ticker.js';
-
-const info = new URL('../assets/icons/info.svg', import.meta.url).href;
-const settings = new URL('../assets/icons/settings.svg', import.meta.url).href;
-const refresh = new URL('../assets/icons/refresh.svg', import.meta.url).href;
-const add = new URL('../assets/icons/circle-plus.svg', import.meta.url).href;
+import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
+import { info, settings, refresh, add } from '../assets/icons/icons.js';
 
 const renderMenu = menuItem => {
   switch (menuItem) {
@@ -14,20 +11,12 @@ const renderMenu = menuItem => {
       return {
         title: 'info',
         template: html`
-          info
-        `
-      };
-    case 'settings':
-      return {
-        title: 'settings',
-        template: html`
-          settings
-        `
-      };
-    case 'contribute':
-      return {
-        title: 'contribute',
-        template: html`
+          <h1>Lockdown</h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+            in reprehenderit in voluptate velit esse cillum dolore eu.
+          </p>
           <${Expandable}
             toggle=${'Sources'}
             detail=${html`
@@ -56,6 +45,20 @@ const renderMenu = menuItem => {
           />
         `
       };
+    case 'settings':
+      return {
+        title: 'settings',
+        template: html`
+          settings
+        `
+      };
+    case 'contribute':
+      return {
+        title: 'contribute',
+        template: html`
+          contribute
+        `
+      };
     case 'ticker':
       return {
         title: 'ticker',
@@ -75,14 +78,33 @@ export class Menu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeItem: 'settings',
-      isMobile: true
+      activeItem: 'info'
     };
   }
 
-  switchContent(val) {
-    this.props.changeRoute(renderMenu(val));
+  componentDidMount() {
+    installMediaQueryWatcher(`(min-width: 960px)`, matches => {
+      this.setState({
+        isMobile: !matches
+      });
+      if (matches) {
+        this.props.close();
+      }
+    });
+  }
 
+  switchContent(val) {
+    if (this.state.isMobile && this.props.opened && val === this.prevVal) {
+      this.props.close();
+      this.setState({
+        activeItem: this.prevVal
+      });
+      this.prevVal = '';
+      return;
+    }
+
+    this.props.changeRoute(renderMenu(val));
+    this.prevVal = val;
     this.setState({
       activeItem: val
     });
@@ -95,27 +117,27 @@ export class Menu extends Component {
           <nav>
             <ul>
               <li>
-                <button onClick=${() => this.switchContent('settings')}>
-                  <img src="${settings}" alt="settings" />
-                  <p>SETTINGS</p>
-                </button>
-              </li>
-              <li>
                 <button onClick=${() => this.switchContent('info')}>
-                  <img src="${info}" alt="info" />
-                  <p>INFO</p>
+                  ${info}
+                  <p class="${activeItem === 'info' ? 'ld-menu--active' : ''}">INFO</p>
                 </button>
               </li>
               <li>
-                <button onClick=${() => this.switchContent('contribute')}>
-                  <img src="${refresh}" alt="contribute" />
-                  <p>CONTRIBUTE</p>
+                <button onClick=${() => this.switchContent('settings')}>
+                  ${settings}
+                  <p class="${activeItem === 'settings' ? 'ld-menu--active' : ''}">SETTINGS</p>
                 </button>
               </li>
               <li>
                 <button onClick=${() => this.switchContent('ticker')}>
-                  <img src="${add}" alt="ticker" />
-                  <p>TICKER</p>
+                  ${refresh}
+                  <p class="${activeItem === 'ticker' ? 'ld-menu--active' : ''}">TICKER</p>
+                </button>
+              </li>
+              <li>
+                <button onClick=${() => this.switchContent('contribute')}>
+                  ${add}
+                  <p class="${activeItem === 'contribute' ? 'ld-menu--active' : ''}">CONTRIBUTE</p>
                 </button>
               </li>
             </ul>

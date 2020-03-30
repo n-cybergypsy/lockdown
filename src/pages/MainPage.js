@@ -71,12 +71,20 @@ const dialogStyles = css`
   }
 
   .ld-dialog--close-cont button {
-    width: 24px;
-    border: none;
-    margin: 0;
+    display: flex;
     padding: 0;
+    width: 30px;
+    border: none;
     overflow: visible;
     background: transparent;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ld-dialog--close-cont button:hover {
+    background-color: rgb(247, 247, 247);
+    border-radius: 50%;
   }
 
   .ld-dialog--close {
@@ -153,7 +161,7 @@ export class MainPage extends Component {
       </div>
 
       <${WorldMap} />
-      <${Menu} changeRoute=${this.__changeRoute} close=${this.__closeDialog} />
+      <${Menu} opened=${this.state.dialog.opened} changeRoute=${this.__changeRoute} close=${this.__closeDialog} />
 
       ${this.state.dialog.opened
         ? html`
@@ -214,13 +222,6 @@ export class MainPage extends Component {
     }
   }
 
-  __onClick(e) {
-    const clickedOutside = !e.path.includes(this.dialogRef);
-    if (clickedOutside) {
-      this.__closeDialog();
-    }
-  }
-
   __change({ template, title }) {
     this.setState({
       dialog: {
@@ -232,7 +233,7 @@ export class MainPage extends Component {
   }
 
   __onClick(e) {
-    const clickedOutside = !e.path.includes(this.dialogRef);
+    const clickedOutside = !e.composedPath().includes(this.dialogRef);
     if (clickedOutside) {
       this.__closeDialog();
     }
