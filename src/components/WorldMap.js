@@ -10,7 +10,8 @@ const today = new Date();
 const mapStyles = css`
   canvas {
     background: #f2fcff;
-  }`;
+  }
+`;
 
 export class WorldMap extends Component {
   constructor() {
@@ -70,14 +71,11 @@ export class WorldMap extends Component {
     });
     console.log(markers);
 
-    markers.forEach( marker => {
-      marker.addTo(map)
+    markers.forEach(marker => {
+      marker.addTo(map);
     });
-  
 
     map.on('load', function() {
-      
-
       let hoveredStateId = null;
 
       map.on('mousemove', 'countries', function(e) {
