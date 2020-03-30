@@ -6,7 +6,7 @@ import css from 'csz';
 const today = new Date();
 const mapStyles = css`
   & {
-    width:100%;
+    width: 100%;
     height: 100vh;
   }
   canvas {
@@ -76,7 +76,7 @@ export class WorldMap extends Component {
     markers.forEach(marker => {
       marker.addTo(map);
     });
-    
+
     map.on('load', function() {
       let hoveredStateId = null;
 
@@ -174,7 +174,7 @@ export class WorldMap extends Component {
   render() {
     return html`
       <div
-      class="map-container ${mapStyles}"
+        class="map-container ${mapStyles}"
         ref=${ref => {
           this.ref = ref;
         }}
