@@ -28,7 +28,7 @@ export class WorldMap extends Component {
     // the world map needs a large data source, lazily fetch them in parallel
     const [lockdowns, mapData, leaflet] = await Promise.all([
       lockdownsService.getLockdowns(),
-      fetch(new URL('../../data/worldmap.geojson', import.meta.url)).then(r => r.json())
+      fetch(new URL('../../data/worldmap.json', import.meta.url)).then(r => r.json())
     ]);
 
     let markers = [];
