@@ -4,6 +4,7 @@ import { router } from '../router.js';
 import { lockdownsService } from '../services/locksdownsService.js';
 import css from 'csz';
 const today = new Date();
+const mapbox_token = 'pk.eyJ1IjoibWlibG9uIiwiYSI6ImNrMGtvajhwaDBsdHQzbm16cGtkcHZlaXUifQ.dJTOE8FJc801TAT0yUhn3g';
 const mapStyles = css`
   & {
     width: 100%;
@@ -11,6 +12,13 @@ const mapStyles = css`
   }
   canvas {
     background: #f2fcff;
+  }
+  .hidden {
+    display: none;
+  }
+  .marker {
+    color: #fff;
+    text-shadow: black 0.1em 0.1em 0.2em;
   }
 `;
 export class WorldMap extends Component {
@@ -26,15 +34,18 @@ export class WorldMap extends Component {
 
   async componentDidMount() {
     // the world map needs a large data source, lazily fetch them in parallel
-    const [lockdowns, mapData, leaflet] = await Promise.all([
+    const [lockdowns, mapData, capitals] = await Promise.all([
       lockdownsService.getLockdowns(),
-      fetch(new URL('../../data/worldmap.json', import.meta.url)).then(r => r.json())
+      fetch(new URL('../../data/worldmap.geojson', import.meta.url)).then(r => r.json()),
+      fetch(new URL('../../data/worldmap_centroids.geojson', import.meta.url)).then(r => r.json())
     ]);
 
     let markers = [];
     let map = new window.mapboxgl.Map({
+      accessToken: mapbox_token,
       container: this.ref,
       center: [this.state.lng, this.state.lat],
+      style: 'mapbox://styles/miblon/ck8f3l2fm0s461invs16mrb8n',
       zoom: this.state.zoom
     });
 
@@ -43,41 +54,16 @@ export class WorldMap extends Component {
         feature.properties.data = lockdowns[feature.properties.NAME];
       }
       feature.properties.color = worldStyle(feature);
-      // create a HTML element for each feature
-      //var polygon = turf.multiPolygon(f.geometry.coordinates);
-      //console.log(polygon);
-      var centroid = turf.centroid(feature.geometry);
-      var el = document.createElement('div');
-      el.className = 'marker';
-      el.innerHTML = feature.properties.NAME;
-      // make a marker for each feature and add to the map
-      markers.push(new mapboxgl.Marker(el).setLngLat(centroid.geometry.coordinates));
+      //createMarker(feature);
     }
 
-    map.addSource('countries', {
-      type: 'geojson',
-      data: mapData,
-      generateId: true
-    });
-
-    map.addLayer({
-      id: 'countries',
-      type: 'fill',
-      source: 'countries',
-      layout: {},
-      paint: {
-        'fill-color': ['get', 'color'],
-        'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.8, 0.4]
-      },
-      filter: ['has', 'color']
-    });
-    console.log(markers);
-
-    markers.forEach(marker => {
-      marker.addTo(map);
-    });
+    // map.on('zoom', () => {
+    //   checkLabel();
+    // });
 
     map.on('load', function() {
+      // checkLabel();
+      addLayers();
       let hoveredStateId = null;
 
       map.on('mousemove', 'countries', function(e) {
@@ -85,7 +71,7 @@ export class WorldMap extends Component {
           if (hoveredStateId) {
             map.setFeatureState(
               {
-                source: 'countries',
+                source: 'country-polygons',
                 id: hoveredStateId
               },
               {
@@ -98,7 +84,7 @@ export class WorldMap extends Component {
 
           map.setFeatureState(
             {
-              source: 'countries',
+              source: 'country-polygons',
               id: hoveredStateId
             },
             {
@@ -111,8 +97,86 @@ export class WorldMap extends Component {
         router.setSearchParam('country', e.features[0].properties.NAME);
         router.setSearchParam('iso2', e.features[0].properties.iso2);
       });
+      map.on('click', 'labels', function(e) {
+        console.log(e);
+        router.setSearchParam('country', e.features[0].properties.NAME);
+        router.setSearchParam('iso2', e.features[0].properties.iso2);
+      });
     });
 
+    function addLayers() {
+      map.addSource('country-polygons', {
+        type: 'geojson',
+        data: mapData,
+        generateId: true
+      });
+
+      map.addLayer({
+        id: 'countries',
+        type: 'fill',
+        source: 'country-polygons',
+        layout: {},
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.8, 0.4]
+        },
+        filter: ['has', 'color']
+      });
+
+      map.addSource('country-labels', {
+        type: 'geojson',
+        data: capitals
+      });
+
+      map.addLayer({
+        id: 'labels',
+        type: 'symbol',
+        source: 'country-labels',
+        layout: {
+          'text-field': [
+            'format',
+            ['get', 'NAME'],
+            { 'font-scale': 1 },
+            '\n' //,
+            // {},
+            // ['get', 'iso2'],
+            // {
+            //   'font-scale': 0.8,
+            //   'text-font': ['literal', ['DIN Offc Pro Italic', 'Arial Unicode MS Regular']]
+            // }
+          ],
+          'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+          'text-radial-offset': 0.5,
+          'text-justify': 'auto'
+        }
+      });
+
+      //console.log(markers);
+
+      //markers.forEach(marker => {
+      //  marker.addTo(map);
+      //});
+    }
+    function createMarker(feature) {
+      var centroid = turf.centroid(feature.geometry);
+      var el = document.createElement('div');
+      el.className = 'marker hidden';
+      el.innerHTML = feature.properties.NAME;
+      // make a marker for each feature and add to the map
+      markers.push(new mapboxgl.Marker(el).setLngLat(centroid.geometry.coordinates));
+    }
+    function checkLabel() {
+      let zoom = map.getZoom();
+      console.log(zoom);
+      markers.forEach(marker => {
+        el = marker.getElement();
+        if (zoom < 3) {
+          el.classList.add('hidden');
+        } else {
+          el.classList.remove('hidden');
+        }
+      });
+    }
     function worldStyle(e) {
       // lockdown unknown
       let value = 'orange';
