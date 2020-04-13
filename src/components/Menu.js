@@ -105,12 +105,10 @@ const renderMenu = (menuItem) => {
         template: html`
           <h1>Lockdown</h1>
           <p class="ld-alpha">
-            Project lockdown is currently in alpha. Not all data may be available yet.
+            Project Lockdown is currently in Alpha. Not all features may be available yet.
           </p>
           <p>
-            <b>Project Lockdown</b> aims to map the different lockdowns around the world, offering the public a number of relevant metrics
-            in order to provide an overview of the restrictions applied worldwide. We hope this will help evaluate the seriousness of the
-            COVID-19 pandemic and help journalists and Human Rights defenders in their reporting and overseeing tasks.
+           <b>Project Lockdown</b> aims to map the different lockdowns and other Non-Pharmaceutical Interventions (NPIs) around the world, offering the citizens, journalists and Human Rights Defenders an overview of the restrictions and potential Human Rights infractions applied worldwide.
           </p>
 
           <${Expandable}
@@ -128,10 +126,10 @@ const renderMenu = (menuItem) => {
           <${Expandable}
             toggle=${'Legend'}
             detail=${html`
-              <p>The map shows two parameters for territories:</p>
+              <p>The general color-codes territories based on two parameters:</p>
               <ol>
-                <li>If the country is under any type of lockdown</li>
-                <li>If there are covid cases in the country</li>
+                <li>Whether there is any type of lockdown in place</li>
+                <li>Whether there are COVID-19 cases reported</li>
               </ol>
               <table class=${styles}>
                 <tr>
@@ -188,12 +186,8 @@ const renderMenu = (menuItem) => {
                   <li>
                     For reference data see the <b>Data Sources</b> Tab.
                   </li>
-                  <li>
-                    For country data see the <b>Find the Countries</b> Tab by it's ISO Alpha 3 code.
-                    (Quick find through Global Tab)
-                  </li>
                 </ul>
-                If you find any errors, please help us and report it <a rel="noopener noreferrer" target="_blank" href="https://github.com/Code-for-All/lockdown/issues">by creating an issue here</a>.
+                Should you find any errors, please help us and report it <a rel="noopener noreferrer" target="_blank" href="https://github.com/Code-for-All/lockdown/issues">by creating an issue here</a>.
               </p>
             `}
           />
@@ -232,10 +226,10 @@ const renderMenu = (menuItem) => {
         title: 'contribute',
         template: html`
         <p>
-          <b>Project Lockdown</b> is made possible by the contribution of many individuals who are giving their time to make possible that everyone has access to the right information.
+          <b>Project Lockdown</b> is made possible by the contribution of many individuals who are giving their time so that everyone has access to the right information.
         </p>
         <p>
-          Do you have any information you want to contribute? Please follow this link:
+          Do you have any sources that you want to contribute with? Please follow this link:
         </p>
         <a class="ld-link" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSfDWe2qlzUnd3e-YYspMzT9adUswDEYIdJMb7jz7ule34-yiA/viewform">
           Submit data
